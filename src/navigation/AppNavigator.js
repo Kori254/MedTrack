@@ -15,6 +15,7 @@ import DoseScreen from '../screens/DoseScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import ClinicianNavigator from '../clinician/ClinicianNavigator';
+import AdminNavigator from '../admin/AdminNavigator';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -91,6 +92,9 @@ export default function AppNavigator() {
             <Stack.Screen name="Onboarding" component={OnboardingScreen}
               options={{ animation: 'slide_from_right', gestureEnabled: false }} />
           </>
+        ) : userRole === 'admin' ? (
+          // ── Admin app ─────────────────────────────────────────────────────
+          <Stack.Screen name="AdminRoot" component={AdminNavigator} />
         ) : userRole === 'clinician' ? (
           // ── Clinician app ─────────────────────────────────────────────────
           <Stack.Screen name="ClinicianRoot" component={ClinicianNavigator} />

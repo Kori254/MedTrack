@@ -272,4 +272,76 @@ export const Icons = {
       <Circle cx="12" cy="12" r="3" />
     </IcC>
   ),
+  eyeOff: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Path d="M17.9 17.9A9.9 9.9 0 0 1 12 19c-6.4 0-10-7-10-7a17.2 17.2 0 0 1 4.1-5.4M9.9 4.2A9.4 9.4 0 0 1 12 4c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2 2.9M2 2l20 20" />
+      <Path d="M9 9a3 3 0 0 0 5.1 2.1" />
+    </IcC>
+  ),
+  ban: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Circle cx="12" cy="12" r="8.5" />
+      <Path d="M5.5 18.5 18.5 5.5" />
+    </IcC>
+  ),
+  key: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Circle cx="9" cy="10" r="4.5" />
+      <Path d="M13 14l8 8M17 14l-2 2" />
+    </IcC>
+  ),
+  userPlus: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Circle cx="10" cy="8" r="3.5" />
+      <Path d="M4.5 20a5.5 5.5 0 0 1 11 0" />
+      <Path d="M18 9v6M15 12h6" />
+    </IcC>
+  ),
+  idBadge: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Rect x="4" y="2" width="16" height="20" rx="2" />
+      <Circle cx="12" cy="9" r="2.5" />
+      <Path d="M7.5 19a4.5 4.5 0 0 1 9 0" />
+      <Path d="M9 4h6" />
+    </IcC>
+  ),
+  shieldCheck: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Path d="M12 3 5 6v5c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6l-7-3Z" />
+      <Path d="m9 12 2 2 4-4" />
+    </IcC>
+  ),
+  sliders: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Path d="M4 6h16M4 12h16M4 18h16" />
+      <Circle cx="8" cy="6" r="2" />
+      <Circle cx="16" cy="12" r="2" />
+      <Circle cx="10" cy="18" r="2" />
+    </IcC>
+  ),
+  copy: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Rect x="9" y="9" width="12" height="12" rx="2" />
+      <Path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </IcC>
+  ),
+  file: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+      <Path d="M14 3v5h5" />
+      <Path d="M9 12h6M9 16h4" />
+    </IcC>
+  ),
+  calendar: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Rect x="3" y="4" width="18" height="17" rx="2" />
+      <Path d="M8 2v4M16 2v4M3 10h18" />
+    </IcC>
+  ),
+  trash: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Path d="M3 6h18M19 6l-1.3 14H6.3L5 6" />
+      <Path d="M10 11v5M14 11v5M9 6V4h6v2" />
+    </IcC>
+  ),
 };

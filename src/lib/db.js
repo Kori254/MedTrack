@@ -23,11 +23,89 @@ export async function clinicianSignIn(email, password) {
   return data.session;
 }
 
-// Returns 'patient' | 'clinician' | null
+// Returns 'patient' | 'clinician' | 'admin' | null
 export async function getUserRole(userId) {
   const { data, error } = await supabase.rpc('get_user_role', { p_user_id: userId });
   if (error) throw error;
   return data;
+}
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
+
+export async function getAdminProfile() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data, error } = await supabase
+    .from('admin_profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+  if (error) return null;
+  return data;
+}
+
+export async function getAllClinicians() {
+  const { data, error } = await supabase
+    .from('clinician_profiles')
+    .select('*')
+    .order('name');
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getNetworkPatients() {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, first_name, last_name, doctor_id, facility:facilities(id,name,city)')
+    .order('first_name');
+  if (error) throw error;
+  return (data ?? []).map((p) => ({
+    id: p.id,
+    name: [p.first_name, p.last_name].filter(Boolean).join(' '),
+    doctor_id: p.doctor_id,
+    facility_name: p.facility?.name,
+    facility_city: p.facility?.city,
+  }));
+}
+
+export async function getFacilities() {
+  const { data, error } = await supabase
+    .from('facilities')
+    .select('*')
+    .order('name');
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function adminCreateClinician({ name, email, phone, specialty, reg, role, permissions, password }) {
+  const { data, error } = await supabase.rpc('admin_create_clinician', {
+    p_name: name,
+    p_email: email,
+    p_phone: phone || '',
+    p_specialty: specialty,
+    p_reg: reg,
+    p_role: role,
+    p_permissions: permissions,
+    p_password: password,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function adminAssignPatient(patientId, doctorId) {
+  const { error } = await supabase.rpc('admin_assign_patient', {
+    p_patient_id: patientId,
+    p_doctor_id: doctorId,
+  });
+  if (error) throw error;
+}
+
+export async function adminSetClinicianStatus(clinicianId, status) {
+  const { error } = await supabase.rpc('admin_set_clinician_status', {
+    p_clinician_id: clinicianId,
+    p_status: status,
+  });
+  if (error) throw error;
 }
 
 // ─── Clinician — patient data ──────────────────────────────────────────────────

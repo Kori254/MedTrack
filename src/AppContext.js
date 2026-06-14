@@ -30,7 +30,7 @@ export function AppProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [userRole, setUserRole] = useState(null); // 'patient' | 'clinician'
+  const [userRole, setUserRole] = useState(null); // 'patient' | 'clinician' | 'admin'
   const [clinicianPatients, setClinicianPatients] = useState([]);
   const theme = isDark ? dark : light;
 
@@ -41,7 +41,11 @@ export function AppProvider({ children }) {
         if (!session?.user) return;
         const uid = session.user.id;
         const role = await db.getUserRole(uid);
-        if (role === 'clinician') {
+        if (role === 'admin') {
+          setUserId(uid);
+          setUserRole('admin');
+          setIsLoggedIn(true);
+        } else if (role === 'clinician') {
           setUserId(uid);
           setUserRole('clinician');
           setIsLoggedIn(true);
@@ -134,6 +138,12 @@ export function AppProvider({ children }) {
       const session = await db.clinicianSignIn(email, password);
       const uid = session.user.id;
       const role = await db.getUserRole(uid);
+      if (role === 'admin') {
+        setUserId(uid);
+        setUserRole('admin');
+        setIsLoggedIn(true);
+        return;
+      }
       if (role !== 'clinician') throw new Error('NOT_CLINICIAN');
       setUserId(uid);
       setUserRole('clinician');
