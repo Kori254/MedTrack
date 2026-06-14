@@ -1,5 +1,4 @@
-// MedTrack Clinician — Today panel + patient roster (clinician home).
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '../../AppContext';
@@ -18,7 +17,7 @@ function RosterRow({ p, onPress, showTime, theme: t }) {
       <View style={{ flex: 1, minWidth: 0 }}>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 7 }}>
           <Text style={{ fontSize: 15, fontWeight: '500', color: t.text }}>{p.name}</Text>
-          <Text style={{ fontSize: 11, color: t.text3 }}>{p.age}{p.sex}</Text>
+          <Text style={{ fontSize: 11, color: t.text3 }}>{p.age}{p.sex && p.sex !== '—' ? p.sex : ''}</Text>
         </View>
         <Text numberOfLines={1} style={{ fontSize: 11, color: t.text3, marginTop: 2 }}>{p.dx}</Text>
       </View>
@@ -28,12 +27,21 @@ function RosterRow({ p, onPress, showTime, theme: t }) {
 }
 
 export default function RosterScreen({ navigation }) {
-  const { theme: t } = useApp();
+  const { theme: t, clinicianPatients } = useApp();
   const [q, setQ] = useState('');
+
   const today = ROSTER.filter((p) => p.appt);
   const pendingRefills = REFILLS.length;
-  const filtered = ROSTER.filter((p) =>
-    !q || p.name.toLowerCase().includes(q.toLowerCase()) || p.dx.toLowerCase().includes(q.toLowerCase()) || p.mrn.toLowerCase().includes(q.toLowerCase()));
+
+  // Merge real DB patients + seed patients. Real patients come first.
+  const allPatients = useMemo(() => [...clinicianPatients, ...ROSTER], [clinicianPatients]);
+
+  const filtered = useMemo(() => allPatients.filter((p) =>
+    !q ||
+    p.name.toLowerCase().includes(q.toLowerCase()) ||
+    p.dx.toLowerCase().includes(q.toLowerCase()) ||
+    p.mrn.toLowerCase().includes(q.toLowerCase())
+  ), [allPatients, q]);
 
   const openChart = (id) => navigation.navigate('Chart', { patientId: id });
 
@@ -54,24 +62,26 @@ export default function RosterScreen({ navigation }) {
         <View style={{ paddingHorizontal: 20, gap: 22 }}>
           {/* Stat tiles */}
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <StatTile icon="users" tint="primary" n={today.length} label="Patients today" onPress={() => {}} theme={t} />
+            <StatTile icon="users" tint="primary" n={allPatients.length} label="Total patients" onPress={() => {}} theme={t} />
             <StatTile icon="inbox" tint="amber" n={pendingRefills} label="Refills to approve" onPress={() => navigation.navigate('Refills')} theme={t} />
-            <StatTile icon="pencil" tint="primary" n={3} label="Scripts today" onPress={() => {}} theme={t} />
+            <StatTile icon="pencil" tint="primary" n={today.length} label="Appts today" onPress={() => {}} theme={t} />
           </View>
 
           <Button label="New prescription" icon="plus" onPress={() => navigation.navigate('PrescribeFlow')} theme={t} />
 
-          {/* Today's schedule */}
-          <View>
-            <SectionLabel theme={t}>Today's schedule</SectionLabel>
-            <View style={{ gap: 10 }}>
-              {today.map((p) => <RosterRow key={p.id} p={p} showTime onPress={() => openChart(p.id)} theme={t} />)}
+          {/* Today's schedule — seed patients only */}
+          {today.length > 0 && (
+            <View>
+              <SectionLabel theme={t}>Today's schedule</SectionLabel>
+              <View style={{ gap: 10 }}>
+                {today.map((p) => <RosterRow key={p.id} p={p} showTime onPress={() => openChart(p.id)} theme={t} />)}
+              </View>
             </View>
-          </View>
+          )}
 
-          {/* All patients */}
+          {/* All patients — real + seed */}
           <View>
-            <SectionLabel theme={t}>All patients</SectionLabel>
+            <SectionLabel theme={t}>All patients ({allPatients.length})</SectionLabel>
             <View style={{ marginBottom: 12 }}>
               <SearchInput value={q} onChangeText={setQ} placeholder="Search name, condition or MRN" theme={t} />
             </View>

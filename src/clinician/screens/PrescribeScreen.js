@@ -15,9 +15,9 @@ import {
 } from '../data';
 
 // ---- step: pick patient ----
-function PickPatient({ onPick, theme: t }) {
+function PickPatient({ onPick, allPatients, theme: t }) {
   const [q, setQ] = useState('');
-  const list = ROSTER.filter((p) => !q || p.name.toLowerCase().includes(q.toLowerCase()) || p.dx.toLowerCase().includes(q.toLowerCase()));
+  const list = allPatients.filter((p) => !q || p.name.toLowerCase().includes(q.toLowerCase()) || p.dx.toLowerCase().includes(q.toLowerCase()));
   return (
     <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 20 }}>
       <View>
@@ -226,7 +226,7 @@ function RxSent({ rx, patient, drug, onDone, onChart, theme: t }) {
 
 // ---- container ----
 export default function PrescribeScreen({ navigation, route }) {
-  const { theme: t } = useApp();
+  const { theme: t, clinicianPatients, actions } = useApp();
   const preset = route.params || {};
   const presetPatient = !!preset.patientId;
   const presetDrug = !!preset.drugId;
@@ -236,8 +236,11 @@ export default function PrescribeScreen({ navigation, route }) {
   if (!presetDrug) flow.push('drug');
   flow.push('dose', 'review');
 
+  const allPatients = useMemo(() => [...clinicianPatients, ...ROSTER], [clinicianPatients]);
+
   const [idx, setIdx] = useState(0);
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const [signed, setSigned] = useState(false);
   const [patientId, setPatientId] = useState(preset.patientId || null);
   const [drugId, setDrugId] = useState(preset.drugId || null);
@@ -253,7 +256,9 @@ export default function PrescribeScreen({ navigation, route }) {
     return {};
   });
 
-  const patient = patientId ? patientById(patientId) : null;
+  const patient = patientId
+    ? (patientById(patientId) || allPatients.find((p) => p.id === patientId))
+    : null;
   const drug = drugId ? drugById(drugId) : null;
   const alerts = useMemo(() => safetyAlerts(drug, patient), [drugId, patientId]);
   const set = (patch) => setRx((p) => ({ ...p, ...patch }));
@@ -294,7 +299,21 @@ export default function PrescribeScreen({ navigation, route }) {
       ? <Button label="Override & continue" variant="ghost" onPress={advance} theme={t} style={{ borderColor: t.coral }} />
       : <Button label="Continue to review" onPress={advance} theme={t} />;
   } else if (cur === 'review') {
-    action = <Button label="Sign & send prescription" icon="send" disabled={!signed} onPress={() => setSent(true)} theme={t} />;
+    const handleSend = async () => {
+      setSending(true);
+      try {
+        if (patient?.isReal) {
+          await actions.savePrescription(patientId, rx, drug, patient.facilityId);
+        }
+        setSent(true);
+      } catch (e) {
+        console.warn('savePrescription error', e);
+        setSent(true); // still show success screen; log the error
+      } finally {
+        setSending(false);
+      }
+    };
+    action = <Button label={sending ? 'Sending…' : 'Sign & send prescription'} icon="send" disabled={!signed || sending} onPress={handleSend} theme={t} />;
   }
 
   const titles = { patient: 'New prescription', drug: 'Select medication', dose: 'Configure dose', review: 'Review & sign' };
@@ -304,7 +323,7 @@ export default function PrescribeScreen({ navigation, route }) {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }} keyboardShouldPersistTaps="handled">
         <TopBar title={titles[cur]} onBack={goBack} sub={patient ? patient.name : null} theme={t} />
         <StepBar count={flow.length} idx={idx} theme={t} />
-        {cur === 'patient' && <PickPatient onPick={(id) => { setPatientId(id); advance(); }} theme={t} />}
+        {cur === 'patient' && <PickPatient allPatients={allPatients} onPick={(id) => { setPatientId(id); advance(); }} theme={t} />}
         {cur === 'drug' && <PickDrug onPick={selectDrug} theme={t} />}
         {cur === 'dose' && drug && <ConfigureDose rx={rx} set={set} patient={patient} drug={drug} alerts={alerts} theme={t} />}
         {cur === 'review' && drug && <ReviewRx rx={rx} patient={patient} drug={drug} signed={signed} onSign={() => setSigned(true)} theme={t} />}

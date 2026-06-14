@@ -120,6 +120,47 @@ export function mapNotifications(rows) {
   });
 }
 
+export function mapRealPatient(profile, meds = [], adherence = 100) {
+  const firstName = profile.first_name || '';
+  const lastName = profile.last_name || '';
+  const dob = profile.dob;
+  const age = dob ? Math.floor((Date.now() - new Date(dob)) / (365.25 * 24 * 3600 * 1000)) : null;
+
+  let flag = 'stable';
+  if (adherence < 70) flag = 'missed';
+  else if (adherence < 85) flag = 'low';
+
+  return {
+    id: profile.id,
+    name: `${firstName} ${lastName}`.trim() || 'Unknown Patient',
+    initials: `${(firstName[0] || '?').toUpperCase()}${(lastName[0] || '?').toUpperCase()}`,
+    age: age || '—',
+    sex: '—',
+    mrn: `PT-${profile.id.slice(0, 6).toUpperCase()}`,
+    dx: 'See patient records',
+    adherence,
+    flag,
+    lastVisit: '—',
+    appt: null,
+    reason: '',
+    allergies: [],
+    meds: meds.map((m) => ({
+      name: m.name,
+      strength: m.strength,
+      form: m.form || 'tablet',
+      scheduleLabel: m.schedule_label || '',
+      daysRemaining: m.days_remaining ?? m.total_days,
+      totalDays: m.total_days,
+      purpose: m.purpose || '',
+      drugId: m.name.toLowerCase().replace(/\s+/g, '').slice(0, 3),
+    })),
+    notes: '',
+    isReal: true,
+    facilityId: profile.facility_id,
+    phone: profile.phone,
+  };
+}
+
 export function mapWeek(weekLogs) {
   const today = new Date();
   const dow = today.getDay();

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { light, dark } from './theme';
 import * as db from './lib/db';
-import { mapProfile, mapMedication, mapDelivery, mapNotifications, mapWeek } from './lib/mapper';
+import { mapProfile, mapMedication, mapDelivery, mapNotifications, mapWeek, mapRealPatient } from './lib/mapper';
 
 const AppContext = createContext(null);
 
@@ -31,6 +31,7 @@ export function AppProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState(null); // 'patient' | 'clinician'
+  const [clinicianPatients, setClinicianPatients] = useState([]);
   const theme = isDark ? dark : light;
 
   // Restore session on app launch
@@ -44,6 +45,7 @@ export function AppProvider({ children }) {
           setUserId(uid);
           setUserRole('clinician');
           setIsLoggedIn(true);
+          loadClinicianData();
         } else if (role === 'patient') {
           await loadUserData(uid);
         }
@@ -93,6 +95,24 @@ export function AppProvider({ children }) {
     }
   }, []);
 
+  const loadClinicianData = useCallback(async () => {
+    try {
+      const profiles = await db.getAllPatientProfiles();
+      const patients = await Promise.all(
+        profiles.map(async (profile) => {
+          const [meds, adherence] = await Promise.all([
+            db.getPatientMedicationsClinic(profile.id),
+            db.getMonthAdherence(profile.id),
+          ]);
+          return mapRealPatient(profile, meds, adherence);
+        })
+      );
+      setClinicianPatients(patients);
+    } catch (e) {
+      console.warn('loadClinicianData error', e);
+    }
+  }, []);
+
   const actions = {
     // Called by LoginScreen after OTP verified — checks profile exists
     async loginWithPhone(phone) {
@@ -118,6 +138,23 @@ export function AppProvider({ children }) {
       setUserId(uid);
       setUserRole('clinician');
       setIsLoggedIn(true);
+      loadClinicianData();
+    },
+
+    async savePrescription(patientId, rx, drug, facilityId) {
+      const FREQ_LABEL = { od: 'Once daily', bd: 'Twice daily', tds: 'Three times daily', qds: 'Four times daily', nocte: 'At night' };
+      await db.savePrescription({
+        patientId,
+        name: drug.name,
+        strength: rx.strength,
+        form: drug.form,
+        purpose: rx.indication || drug.cls,
+        freq: rx.freq,
+        scheduleLabel: `${FREQ_LABEL[rx.freq] || rx.freq} · ${rx.route}`,
+        totalDays: rx.duration,
+        facilityId: facilityId || null,
+      });
+      loadClinicianData();
     },
 
     // Called at end of Onboarding with the filled-in profile data
@@ -132,6 +169,7 @@ export function AppProvider({ children }) {
       setIsLoggedIn(false);
       setUserId(null);
       setUserRole(null);
+      setClinicianPatients([]);
       setState({ ...EMPTY_STATE, today: todayLabel() });
     },
 
@@ -179,7 +217,7 @@ export function AppProvider({ children }) {
   };
 
   return (
-    <AppContext.Provider value={{ state, theme, isDark, isLoggedIn, isLoading, userId, userRole, actions }}>
+    <AppContext.Provider value={{ state, theme, isDark, isLoggedIn, isLoading, userId, userRole, clinicianPatients, actions }}>
       {children}
     </AppContext.Provider>
   );

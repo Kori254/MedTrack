@@ -124,8 +124,9 @@ function ActivityRow({ icon, tint, title, sub, theme: t }) {
 }
 
 export default function ChartScreen({ navigation, route }) {
-  const { theme: t } = useApp();
-  const p = patientById(route.params?.patientId) || ROSTER[0];
+  const { theme: t, clinicianPatients } = useApp();
+  const patId = route.params?.patientId;
+  const p = patientById(patId) || clinicianPatients.find((cp) => cp.id === patId) || ROSTER[0];
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: t.appBg }}>
@@ -139,11 +140,16 @@ export default function ChartScreen({ navigation, route }) {
           <View>
             <SectionLabel theme={t}>Current medications</SectionLabel>
             <View style={{ gap: 12 }}>
-              {p.meds.map((m, i) => (
+              {p.meds.length > 0 ? p.meds.map((m, i) => (
                 <ChartMedRow key={i} med={m} theme={t}
                   onRenew={() => navigation.navigate('PrescribeFlow', { patientId: p.id, drugId: m.drugId, renew: true })} />
               ))}
             </View>
+          ) : (
+            <View style={{ backgroundColor: t.surfaceSunken, borderRadius: 18, padding: 20, alignItems: 'center' }}>
+              <Text style={{ fontSize: 13, color: t.text3 }}>No active medications on record</Text>
+            </View>
+          )}
           </View>
 
           <View>

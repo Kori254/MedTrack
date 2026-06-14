@@ -30,6 +30,51 @@ export async function getUserRole(userId) {
   return data;
 }
 
+// ─── Clinician — patient data ──────────────────────────────────────────────────
+
+export async function getAllPatientProfiles() {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, facility:facilities(id,name)')
+    .order('first_name');
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getPatientMedicationsClinic(patientId) {
+  const { data, error } = await supabase
+    .from('medications')
+    .select('*')
+    .eq('patient_id', patientId)
+    .eq('active', true)
+    .order('created_at');
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function savePrescription({ patientId, name, strength, form, purpose, freq, scheduleLabel, totalDays, facilityId }) {
+  const freqToTime = { od: '08:00', bd: '08:00', tds: '08:00', qds: '08:00', nocte: '21:00' };
+  const { data, error } = await supabase
+    .from('medications')
+    .insert({
+      patient_id: patientId,
+      name,
+      strength,
+      form: form || 'tablet',
+      purpose: purpose || '',
+      schedule_time: freqToTime[freq] || '08:00',
+      schedule_label: scheduleLabel,
+      total_days: totalDays,
+      days_remaining: totalDays,
+      facility_id: facilityId || null,
+      active: true,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 export async function getClinicianProfile(userId) {
   const { data, error } = await supabase
     .from('clinician_profiles')
