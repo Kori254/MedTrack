@@ -47,10 +47,14 @@ export async function getAdminProfile() {
 export async function getAllClinicians() {
   const { data, error } = await supabase
     .from('clinician_profiles')
-    .select('*')
-    .order('name');
+    .select('id, first_name, last_name, email, phone, specialty, facility_id, registration_number, role, permissions, status, created_at')
+    .order('first_name');
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map((d) => ({
+    ...d,
+    name: [d.first_name, d.last_name].filter(Boolean).join(' '),
+    reg: d.registration_number,
+  }));
 }
 
 export async function getNetworkPatients() {

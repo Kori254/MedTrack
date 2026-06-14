@@ -52,7 +52,7 @@ function AdminTabs() {
 function AdminStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="AdminRoot" component={AdminTabs} />
+      <Stack.Screen name="AdminTabs" component={AdminTabs} />
       <Stack.Screen name="DoctorDetail" component={DoctorDetailScreen}
         options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="AddDoctor" component={AddDoctorScreen}
