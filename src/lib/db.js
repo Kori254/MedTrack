@@ -56,7 +56,7 @@ export async function getAllClinicians() {
 export async function getNetworkPatients() {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, first_name, last_name, doctor_id, facility:facilities(id,name,city)')
+    .select('id, first_name, last_name, doctor_id, facility:facilities(id,name,location)')
     .order('first_name');
   if (error) throw error;
   return (data ?? []).map((p) => ({
@@ -64,7 +64,7 @@ export async function getNetworkPatients() {
     name: [p.first_name, p.last_name].filter(Boolean).join(' '),
     doctor_id: p.doctor_id,
     facility_name: p.facility?.name,
-    facility_city: p.facility?.city,
+    facility_city: p.facility?.location,
   }));
 }
 

@@ -94,7 +94,7 @@ export default function AppNavigator() {
           </>
         ) : userRole === 'admin' ? (
           // ── Admin app ─────────────────────────────────────────────────────
-          <Stack.Screen name="AdminRoot" component={AdminNavigator} />
+          <Stack.Screen name="AdminApp" component={AdminNavigator} />
         ) : userRole === 'clinician' ? (
           // ── Clinician app ─────────────────────────────────────────────────
           <Stack.Screen name="ClinicianRoot" component={ClinicianNavigator} />
