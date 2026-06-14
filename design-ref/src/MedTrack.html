@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MedTrack — Patient App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="app/styles.css" />
+<style>
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: #E7EBE9;
+    background-image: radial-gradient(1200px 600px at 78% -10%, #EEF2F0, #E2E7E4);
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    color: #14211d;
+    min-height: 100%;
+  }
+  #root { min-height: 100vh; }
+  .stage {
+    display: flex; align-items: center; justify-content: center; gap: 56px;
+    min-height: 100vh; padding: 48px 40px; box-sizing: border-box; flex-wrap: wrap;
+  }
+  .device-wrap { flex: none; }
+
+  /* ---- Review panel ---- */
+  .rev {
+    width: 300px; flex: none; align-self: center;
+    display: flex; flex-direction: column; gap: 22px;
+    color: #2b3a34;
+  }
+  .rev-brand { display: flex; align-items: center; gap: 12px; }
+  .rev-logo {
+    width: 42px; height: 42px; border-radius: 13px; background: #0F6E56; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 20px; flex: none;
+    box-shadow: 0 6px 18px -6px rgba(15,110,86,.6);
+  }
+  .rev-name { font-size: 17px; font-weight: 500; letter-spacing: -0.02em; }
+  .rev-sub { font-size: 12px; color: #6a7a73; }
+  .rev-block { display: flex; flex-direction: column; gap: 10px; }
+  .rev-h { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: #7a8a83; display: flex; align-items: center; gap: 8px; }
+  .rev-tag { background: #d9e7e1; color: #0F6E56; font-size: 9px; padding: 2px 6px; border-radius: 5px; letter-spacing: 0.04em; }
+  .rev-seg { display: flex; gap: 4px; background: #fff; border: 1px solid #dde5e1; border-radius: 12px; padding: 4px; }
+  .rev-seg button {
+    flex: 1; border: none; background: none; cursor: pointer; font-family: inherit;
+    font-size: 13px; font-weight: 500; color: #5a6b64; padding: 9px 4px; border-radius: 9px; transition: .18s;
+  }
+  .rev-seg button.on { background: #0F6E56; color: #fff; box-shadow: 0 2px 8px -2px rgba(15,110,86,.5); }
+  .rev-seg-3 button.on { background: #0F6E56; }
+  .rev-note { font-size: 12px; line-height: 1.5; color: #6a7a73; margin: 2px 0 0; }
+  .rev-jumps { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .rev-jump {
+    border: 1px solid #dde5e1; background: #fff; cursor: pointer; font-family: inherit;
+    font-size: 12.5px; font-weight: 500; color: #41524b; padding: 10px 8px; border-radius: 10px; text-align: left; transition: .15s;
+  }
+  .rev-jump:hover { border-color: #b9ccc4; }
+  .rev-jump.active { background: #e1eee9; border-color: #0F6E56; color: #0F6E56; }
+  .rev-foot { font-size: 11.5px; line-height: 1.55; color: #84938c; margin: 0; }
+  @media (max-width: 760px) { .rev { order: 2; width: 100%; max-width: 390px; } }
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="400" fill="#0F6E56"/>
+    <rect x="148" y="92" width="104" height="36" rx="18" fill="#fff"/>
+    <rect x="192" y="48" width="16" height="124" rx="8" fill="#fff"/>
+    <path d="M150 240 l34 34 l66 -74" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</template>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="frames/ios-frame.jsx"></script>
+<script type="text/babel" src="app/icons.jsx"></script>
+<script type="text/babel" src="app/data.jsx"></script>
+<script type="text/babel" src="app/ui.jsx"></script>
+<script type="text/babel" src="app/screens-home.jsx"></script>
+<script type="text/babel" src="app/screens-meddetail.jsx"></script>
+<script type="text/babel" src="app/screens-dose.jsx"></script>
+<script type="text/babel" src="app/screens-delivery.jsx"></script>
+<script type="text/babel" src="app/screens-notifications.jsx"></script>
+<script type="text/babel" src="app/screens-meds.jsx"></script>
+<script type="text/babel" src="app/screens-profile.jsx"></script>
+<script type="text/babel" src="app/screens-onboarding.jsx"></script>
+<script type="text/babel" src="app/App.jsx"></script>
+</body>
+</html>
