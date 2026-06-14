@@ -255,6 +255,11 @@ export const Icons = {
       <Path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M17.5 14.4A5.5 5.5 0 0 1 20.5 19" />
     </IcC>
   ),
+  x: ({ size = 20, color = '#000', sw = 1.6 }) => (
+    <IcC size={size} color={color} sw={sw}>
+      <Path d="M18 6 6 18M6 6l12 12" />
+    </IcC>
+  ),
   mail: ({ size = 20, color = '#000', sw = 1.6 }) => (
     <IcC size={size} color={color} sw={sw}>
       <Rect x="2" y="4" width="20" height="16" rx="2" />
