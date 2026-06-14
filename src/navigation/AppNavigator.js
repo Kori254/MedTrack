@@ -2,7 +2,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View } from 'react-native';
 import { useApp } from '../AppContext';
 import { Icons } from '../components/Icons';
 import LoginScreen from '../screens/LoginScreen';
@@ -26,9 +25,7 @@ function TabBarIcon({ name, color, size }) {
 }
 
 function HomeTabs() {
-  const { state, theme: t } = useApp();
-  const unread = state.notifications.filter((n) => n.unread).length;
-
+  const { theme: t } = useApp();
   return (
     <Tab.Navigator
       screenOptions={{
@@ -58,61 +55,57 @@ function HomeTabs() {
   );
 }
 
+// Single NavigationContainer kept alive for the entire session.
+// Auth state is handled by swapping Screen sets inside the same Stack,
+// which lets React Navigation animate cleanly without tearing down the container.
 export default function AppNavigator() {
-  const { theme: t, isLoggedIn, userRole, actions } = useApp();
+  const { actions, isLoggedIn, userRole } = useApp();
 
-  if (!isLoggedIn) {
-    return (
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {/* 1. Sign in — patient OTP or clinician email+password */}
-          <Stack.Screen name="Login">
-            {({ navigation }) => (
-              <LoginScreen
-                mode="login"
-                onLogin={(phone) => actions.loginWithPhone(phone)}
-                onClinicianLogin={(email, password) => actions.clinicianLogin(email, password)}
-                onNewUser={() => navigation.navigate('Signup')}
-              />
-            )}
-          </Stack.Screen>
-          {/* 2. Sign up (new patient only) */}
-          <Stack.Screen name="Signup" options={{ animation: 'slide_from_right' }}>
-            {({ navigation }) => (
-              <LoginScreen
-                mode="signup"
-                onLogin={async (phone) => {
-                  await actions.signUpWithPhone(phone);
-                  navigation.navigate('Onboarding', { phone });
-                }}
-              />
-            )}
-          </Stack.Screen>
-          {/* 3. Onboarding (profile + prescription, after signup) */}
-          <Stack.Screen name="Onboarding" component={OnboardingScreen}
-            options={{ animation: 'slide_from_right', gestureEnabled: false }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
-
-  // Clinician gets their own root navigator — no patient tabs
-  if (userRole === 'clinician') {
-    return (
-      <NavigationContainer>
-        <ClinicianNavigator />
-      </NavigationContainer>
-    );
-  }
-
-  // Patient app
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Main" component={HomeTabs} />
-        <Stack.Screen name="MedDetail" component={MedDetailScreen} options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="Dose" component={DoseScreen} options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
-        <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ animation: 'slide_from_right' }} />
+        {!isLoggedIn ? (
+          // ── Auth screens ──────────────────────────────────────────────────
+          <>
+            <Stack.Screen name="Login">
+              {({ navigation }) => (
+                <LoginScreen
+                  mode="login"
+                  onLogin={(phone) => actions.loginWithPhone(phone)}
+                  onClinicianLogin={(email, password) => actions.clinicianLogin(email, password)}
+                  onNewUser={() => navigation.navigate('Signup')}
+                />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="Signup" options={{ animation: 'slide_from_right' }}>
+              {({ navigation }) => (
+                <LoginScreen
+                  mode="signup"
+                  onLogin={async (phone) => {
+                    await actions.signUpWithPhone(phone);
+                    navigation.navigate('Onboarding', { phone });
+                  }}
+                />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen}
+              options={{ animation: 'slide_from_right', gestureEnabled: false }} />
+          </>
+        ) : userRole === 'clinician' ? (
+          // ── Clinician app ─────────────────────────────────────────────────
+          <Stack.Screen name="ClinicianRoot" component={ClinicianNavigator} />
+        ) : (
+          // ── Patient app ───────────────────────────────────────────────────
+          <>
+            <Stack.Screen name="Main" component={HomeTabs} />
+            <Stack.Screen name="MedDetail" component={MedDetailScreen}
+              options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="Dose" component={DoseScreen}
+              options={{ animation: 'slide_from_bottom', presentation: 'modal' }} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen}
+              options={{ animation: 'slide_from_right' }} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
