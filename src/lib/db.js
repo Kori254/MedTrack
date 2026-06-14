@@ -212,17 +212,6 @@ export async function updateProfile(userId, patch) {
   if (error) throw error;
 }
 
-// ─── Facilities ───────────────────────────────────────────────────────────────
-
-export async function getFacilities() {
-  const { data, error } = await supabase
-    .from('facilities')
-    .select('id, name, location')
-    .order('name');
-  if (error) throw error;
-  return data;
-}
-
 // ─── Medications ──────────────────────────────────────────────────────────────
 
 export async function getMedications(patientId) {
