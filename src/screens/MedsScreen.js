@@ -76,11 +76,6 @@ export default function MedsScreen({ navigation }) {
       </View>
       <View style={{ paddingHorizontal: 20, gap: 14 }}>
         {state.meds.map((m) => <MedCard key={m.id} med={m} navigation={navigation} theme={t} />)}
-        <TouchableOpacity onPress={() => navigation.navigate('Onboarding')}
-          style={{ backgroundColor: t.primaryTint, borderRadius: 16, minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, marginTop: 4 }}>
-          <Icons.plus size={20} color={t.textOnTint} />
-          <Text style={{ fontSize: 16, fontWeight: '500', color: t.textOnTint }}>Add a medication</Text>
-        </TouchableOpacity>
         <View style={{ backgroundColor: t.primaryTint, borderRadius: 22, padding: 18, flexDirection: 'row', gap: 12, alignItems: 'flex-start', marginTop: 4 }}>
           <Icons.building size={20} color={t.primary} />
           <Text style={{ flex: 1, fontSize: 13, color: t.text2, lineHeight: 19 }}>Your facility, {state.patient.facility}, can also add or update prescriptions remotely — new medications appear here automatically.</Text>
