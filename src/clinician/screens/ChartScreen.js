@@ -139,17 +139,18 @@ export default function ChartScreen({ navigation, route }) {
 
           <View>
             <SectionLabel theme={t}>Current medications</SectionLabel>
-            <View style={{ gap: 12 }}>
-              {p.meds.length > 0 ? p.meds.map((m, i) => (
-                <ChartMedRow key={i} med={m} theme={t}
-                  onRenew={() => navigation.navigate('PrescribeFlow', { patientId: p.id, drugId: m.drugId, renew: true })} />
-              ))}
-            </View>
-          ) : (
-            <View style={{ backgroundColor: t.surfaceSunken, borderRadius: 18, padding: 20, alignItems: 'center' }}>
-              <Text style={{ fontSize: 13, color: t.text3 }}>No active medications on record</Text>
-            </View>
-          )}
+            {p.meds.length > 0 ? (
+              <View style={{ gap: 12 }}>
+                {p.meds.map((m, i) => (
+                  <ChartMedRow key={i} med={m} theme={t}
+                    onRenew={() => navigation.navigate('PrescribeFlow', { patientId: p.id, drugId: m.drugId, renew: true })} />
+                ))}
+              </View>
+            ) : (
+              <View style={{ backgroundColor: t.surfaceSunken, borderRadius: 18, padding: 20, alignItems: 'center' }}>
+                <Text style={{ fontSize: 13, color: t.text3 }}>No active medications on record</Text>
+              </View>
+            )}
           </View>
 
           <View>
@@ -164,9 +165,9 @@ export default function ChartScreen({ navigation, route }) {
             <SectionLabel theme={t}>Recent activity</SectionLabel>
             <View style={{ backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 18, paddingHorizontal: 16,
               shadowColor: '#102820', shadowOpacity: 0.05, shadowRadius: 9, shadowOffset: { width: 0, height: 3 } }}>
-              <ActivityRow icon="pencil" tint title="Prescription reviewed" sub={`${p.meds[0].name} ${p.meds[0].strength} · ${p.lastVisit}`} theme={t} />
+              <ActivityRow icon="pencil" tint title="Prescription reviewed" sub={p.meds[0] ? `${p.meds[0].name} ${p.meds[0].strength} · ${p.lastVisit}` : p.lastVisit} theme={t} />
               <View style={{ height: 1, backgroundColor: t.border }} />
-              <ActivityRow icon="truck" tint title="Refill delivered" sub={`${p.meds[p.meds.length - 1].name} · home delivery`} theme={t} />
+              <ActivityRow icon="truck" tint title="Refill delivered" sub={p.meds.length > 0 ? `${p.meds[p.meds.length - 1].name} · home delivery` : 'home delivery'} theme={t} />
               <View style={{ height: 1, backgroundColor: t.border }} />
               <ActivityRow icon="stethoscope" title="Clinic visit" sub={`${p.reason || 'Routine review'} · ${p.lastVisit}`} theme={t} />
             </View>
