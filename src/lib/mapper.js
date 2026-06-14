@@ -70,6 +70,7 @@ export function mapMedication(row, todayLogs) {
     skipReason,
     nextDoseIn,
     missedDays: [],
+    refills: [],
   };
 }
 
