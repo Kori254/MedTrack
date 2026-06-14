@@ -47,60 +47,74 @@ export default function DeliveryScreen({ navigation }) {
       </View>
 
       <View style={{ paddingHorizontal: 20, gap: 22 }}>
-        {/* Active delivery */}
-        <View style={{ backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 22, padding: 18, gap: 20, shadowColor: '#102820', shadowOpacity: 0.05, shadowRadius: 9, shadowOffset: { width: 0, height: 3 } }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <View style={{ width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: t.primaryTint }}>
-              <Icons.package size={22} color={t.primary} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 16, fontWeight: '500', color: t.text }}>{d.med}</Text>
-              <Text style={{ fontSize: 11, color: t.text3 }}>{d.quantity}</Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, height: 26, paddingHorizontal: 10, borderRadius: 8, backgroundColor: t.amberTint }}>
-              <Icons.truck size={13} color={t.amberText} />
-              <Text style={{ fontSize: 12, fontWeight: '500', color: t.amberText }}>In transit</Text>
-            </View>
-          </View>
+        {/* Active delivery — or empty state */}
+        {d ? (
+          <>
+            <View style={{ backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 22, padding: 18, gap: 20, shadowColor: '#102820', shadowOpacity: 0.05, shadowRadius: 9, shadowOffset: { width: 0, height: 3 } }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: t.primaryTint }}>
+                  <Icons.package size={22} color={t.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '500', color: t.text }}>{d.med}</Text>
+                  <Text style={{ fontSize: 11, color: t.text3 }}>{d.quantity}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, height: 26, paddingHorizontal: 10, borderRadius: 8, backgroundColor: t.amberTint }}>
+                  <Icons.truck size={13} color={t.amberText} />
+                  <Text style={{ fontSize: 12, fontWeight: '500', color: t.amberText }}>In transit</Text>
+                </View>
+              </View>
 
-          <DeliveryTracker d={d} theme={t} />
+              <DeliveryTracker d={d} theme={t} />
 
-          <View style={{ backgroundColor: t.primaryTint, borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Icons.clock size={20} color={t.primary} />
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 14, fontWeight: '500', color: t.text }}>Estimated arrival {d.eta}</Text>
-              <Text style={{ fontSize: 11, color: t.text3 }}>{d.window}</Text>
+              <View style={{ backgroundColor: t.primaryTint, borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <Icons.clock size={20} color={t.primary} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '500', color: t.text }}>Estimated arrival {d.eta}</Text>
+                  <Text style={{ fontSize: 11, color: t.text3 }}>{d.window}</Text>
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
 
-        {/* Map placeholder */}
-        <View>
-          <SectionLabel theme={t}>Live location</SectionLabel>
-          <View style={{ height: 168, borderRadius: 18, overflow: 'hidden', backgroundColor: t.surfaceSunken, borderWidth: 1, borderColor: t.border, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ position: 'absolute', top: 14, left: 16 }}>
-              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: t.text3 }}>// agent en route · 4.2 km away</Text>
+            {/* Map placeholder */}
+            <View>
+              <SectionLabel theme={t}>Live location</SectionLabel>
+              <View style={{ height: 168, borderRadius: 18, overflow: 'hidden', backgroundColor: t.surfaceSunken, borderWidth: 1, borderColor: t.border, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ position: 'absolute', top: 14, left: 16 }}>
+                  <Text style={{ fontFamily: 'monospace', fontSize: 10, color: t.text3 }}>// agent en route · 4.2 km away</Text>
+                </View>
+                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: t.primary, alignItems: 'center', justifyContent: 'center' }}>
+                  <Icons.truck size={18} color="#fff" />
+                </View>
+                <View style={{ position: 'absolute', bottom: 14, right: 16 }}>
+                  <Text style={{ fontFamily: 'monospace', fontSize: 10, color: t.text3 }}>Kileleshwa →</Text>
+                </View>
+              </View>
+              <View style={{ backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 22, padding: 18, flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12, shadowColor: '#102820', shadowOpacity: 0.05, shadowRadius: 9, shadowOffset: { width: 0, height: 3 } }}>
+                <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.primaryTint }}>
+                  <Icons.user size={20} color={t.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '500', color: t.text }}>{d.agent}</Text>
+                  <Text style={{ fontSize: 11, color: t.text3 }}>Your delivery agent · ref {d.ref}</Text>
+                </View>
+                <TouchableOpacity style={{ width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: t.surface, borderWidth: 1, borderColor: t.border }}>
+                  <Icons.phone size={20} color={t.primary} />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: t.primary, alignItems: 'center', justifyContent: 'center' }}>
-              <Icons.truck size={18} color="#fff" />
+          </>
+        ) : (
+          <View style={{ backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 22, padding: 32, alignItems: 'center', gap: 12, shadowColor: '#102820', shadowOpacity: 0.05, shadowRadius: 9, shadowOffset: { width: 0, height: 3 } }}>
+            <View style={{ width: 56, height: 56, borderRadius: 18, backgroundColor: t.surface2, alignItems: 'center', justifyContent: 'center' }}>
+              <Icons.truck size={26} color={t.text3} />
             </View>
-            <View style={{ position: 'absolute', bottom: 14, right: 16 }}>
-              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: t.text3 }}>Kileleshwa →</Text>
-            </View>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: t.text }}>No active delivery</Text>
+            <Text style={{ fontSize: 13, color: t.text3, textAlign: 'center', lineHeight: 19 }}>
+              When a prescription is dispatched, you'll be able to track it here.
+            </Text>
           </View>
-          <View style={{ backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 22, padding: 18, flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12, shadowColor: '#102820', shadowOpacity: 0.05, shadowRadius: 9, shadowOffset: { width: 0, height: 3 } }}>
-            <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.primaryTint }}>
-              <Icons.user size={20} color={t.primary} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 14, fontWeight: '500', color: t.text }}>{d.agent}</Text>
-              <Text style={{ fontSize: 11, color: t.text3 }}>Your delivery agent · ref {d.ref}</Text>
-            </View>
-            <TouchableOpacity style={{ width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: t.surface, borderWidth: 1, borderColor: t.border }}>
-              <Icons.phone size={20} color={t.primary} />
-            </TouchableOpacity>
-          </View>
-        </View>
+        )}
 
         {/* Past deliveries */}
         <View>
